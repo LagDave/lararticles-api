@@ -1,44 +1,91 @@
+<style lang="css">
+body {
+  background: #eee;
+}
+</style>
 <template>
   <div>
-    <form @submit.prevent="addArticle" class="form">
-      <div class="form-group">
-        <input v-model="article.title" type="text" placeholder="Title" class="form-control" />
+    <div class="row">
+      <div class="col-md-4">
+        <div style="border:none" class="sticky-top shadow card card-body">
+          <h4>Create an Article</h4>
+          <hr />
+          <form @submit.prevent="addArticle" class="form">
+            <div class="form-group">
+              <input v-model="article.title" type="text" placeholder="Title" class="form-control" />
+            </div>
+            <div class="form-group">
+              <textarea v-model="article.body" type="text" placeholder="Body" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Save</button>
+          </form>
+        </div>
       </div>
-      <div class="form-group">
-        <textarea v-model="article.body" type="text" placeholder="Body" class="form-control"></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">Save</button>
-    </form>
+      <div class="col-md-8">
+        <hr />
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <li v-bind:class="[{disabled: !pagination.prev_page_url}]" class="page-item">
+              <a
+                @click="fetchArticles(pagination.prev_page_url)"
+                class="page-link"
+                href="#"
+              >Previous</a>
+            </li>
 
-    <hr />
+            <li class="page-item disabled">
+              <a
+                class="page-link text-dark"
+                href="#"
+              >Page {{pagination.current_page}} of {{pagination.last_page}}</a>
+            </li>
 
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        <li v-bind:class="[{disabled: !pagination.prev_page_url}]" class="page-item">
-          <a @click="fetchArticles(pagination.prev_page_url)" class="page-link" href="#">Previous</a>
-        </li>
+            <li v-bind:class="[{disabled: !pagination.next_page_url}]" class="page-item">
+              <a @click="fetchArticles(pagination.next_page_url)" class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
+        <hr />
 
-        <li class="page-item disabled">
-          <a
-            class="page-link text-dark"
-            href="#"
-          >Page {{pagination.current_page}} of {{pagination.last_page}}</a>
-        </li>
+        <div
+          v-for="article in articles"
+          style="border:none"
+          v-bind:key="article.id"
+          class="card card-body mb-2"
+        >
+          <h3>{{article.title}}</h3>
+          <p>{{article.body}}</p>
+          <hr />
 
-        <li v-bind:class="[{disabled: !pagination.next_page_url}]" class="page-item">
-          <a @click="fetchArticles(pagination.next_page_url)" class="page-link" href="#">Next</a>
-        </li>
-      </ul>
-    </nav>
+          <div class="btn-group">
+            <button @click="editArticle(article)" class="btn btn-info">Edit</button>
+            <button @click="deleteArticle(article.id)" class="btn btn-primary">Delete</button>
+          </div>
+        </div>
+        <hr />
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <li v-bind:class="[{disabled: !pagination.prev_page_url}]" class="page-item">
+              <a
+                @click="fetchArticles(pagination.prev_page_url)"
+                class="page-link"
+                href="#"
+              >Previous</a>
+            </li>
 
-    <div v-for="article in articles" v-bind:key="article.id" class="card card-body mb-2">
-      <h3>{{article.title}}</h3>
-      <p>{{article.body}}</p>
-      <hr />
+            <li class="page-item disabled">
+              <a
+                class="page-link text-dark"
+                href="#"
+              >Page {{pagination.current_page}} of {{pagination.last_page}}</a>
+            </li>
 
-      <div class="btn-group">
-        <button @click="editArticle(article)" class="btn btn-warning">Edit</button>
-        <button @click="deleteArticle(article.id)" class="btn btn-danger">Delete</button>
+            <li v-bind:class="[{disabled: !pagination.next_page_url}]" class="page-item">
+              <a @click="fetchArticles(pagination.next_page_url)" class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
+        <hr />
       </div>
     </div>
   </div>
@@ -93,8 +140,8 @@ export default {
         })
           .then(res => res.json())
           .then(data => {
-            alert("Article Removed");
             this.fetchArticles();
+            alert("Article Removed");
           })
           .catch(err => console.log(err));
       }
@@ -113,8 +160,9 @@ export default {
           .then(data => {
             this.article.title = "";
             this.article.body = "";
-            alert("Article Added Successfully");
+
             this.fetchArticles();
+            alert("Article Added Successfully");
           })
           .catch(err => console.log(err));
       } else {
@@ -129,8 +177,9 @@ export default {
           .then(data => {
             this.article.title = "";
             this.article.body = "";
-            alert("Article Updated!");
+
             this.fetchArticles();
+            alert("Article Updated!");
           })
           .catch(err => console.log(err));
       }
